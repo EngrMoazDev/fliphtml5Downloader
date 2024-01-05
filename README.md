@@ -17,7 +17,7 @@ It will make a folder with the title of book, and place all the images in that f
 
 The name of pdf is the title of the book.
 
-A Brief Tutorial can be seena at: https://youtu.be/RNzS0H2hspA
+A Brief Tutorial can be watched at: https://youtu.be/RNzS0H2hspA
 
 # Warning
 This is only for educational purposes. It's the very basic version to download. You are free to add more stuff like threading, headers etc in this to speed up or to deal with browser requirements.
