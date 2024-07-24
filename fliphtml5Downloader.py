@@ -35,7 +35,7 @@ config_file_url = 'https://online.fliphtml5.com/{0}/javascript/config.js'.format
 import requests
 import json
 config_file = requests.get(config_file_url)
-config_dict = json.loads(config_file.text.split('= ')[1].split(';')[0])
+config_dict = json.loads(config_file.text.split('= ')[1][:-1])      #changed from split(;) to slicing to remove last semicolon.
 fliphtml5_pages = config_dict['fliphtml5_pages']
 
 #Let's prepare where to save our images, creates folder as per title of book
@@ -44,27 +44,42 @@ import os
 os.makedirs(folder_name, exist_ok=True)
 
 #Let's download our images now
+"""
+Below code is being added to see which url pattern is being followed.
+"""
+def url_crack(book_name, page):
+    #Fliphtml5 uses different options of url for different books. Feel free to add more options in the dictionary below.
+    url_options = {0: 'https://online.fliphtml5.com/{0}/files/large/{1}'.format(book_name, fliphtml5_pages[page]['n'][0]), 1: 'https://online.fliphtml5.com/{0}/files/page/{1}.jpg'.format(book_name, page+1)} 
+    for key in url_options.keys():
+        page_image = requests.get(url_options[key])
+        if page_image.status_code == 200:
+            return url_options[key]
+    return ''
+
 page_images=[]
 for page in range(len(fliphtml5_pages)):
-	page_url = 'https://online.fliphtml5.com/{0}/files/large/{1}'.format(book_name,fliphtml5_pages[page]['n'][0])
-	file_path = "{0}/{1}.jpg".format(folder_name, page + 1)
-	page_image = requests.get(page_url)
-	page_images.append(page_image.content)
-	print('Downloading Page ' + str(page + 1) + ' / ' + str(len(fliphtml5_pages)) + ' .....')
-	with open(file_path, "wb") as f:
-        	f.write(page_image.content)
+    #print(fliphtml5_pages[page]['n'][0][1:])
+    page_url = url_crack(book_name, page)
+    if page_url != '':
+        #page_url = 'https://online.fliphtml5.com/{0}/files/page/{1}.jpg'.format(book_name, page+1)    #fliphtml5_pages[page]['n'][0]) #changed large to page
+        file_path = "{0}/{1}.jpg".format(folder_name, page + 1)
+        page_image = requests.get(page_url)
+        page_images.append(page_image.content)
+        print('Downloading Page ' + str(page + 1) + ' / ' + str(len(fliphtml5_pages)) + ' .....')
+        with open(file_path, "wb") as f:
+            f.write(page_image.content)
+    else:
+        print('Send an email to developer with your book name or comment on the youtube video with the book name.')
+        break
         	
-        	
-print("Downloading Complete. Don't Close, hold-on. We are yet to make PDF.")
+if page_url != '' and page_images != []:
+    print("Downloading Complete. Don't Close, hold-on. We are yet to make PDF.")
 
-#Let's make pdf now.
-import img2pdf
-with open("{0}.pdf".format(folder_name), "wb") as file:
-    file.write(img2pdf.convert(page_images))
-    
-    
-print('The pdf named ' + folder_name + '.pdf has been saved in your working directory.')
-print('Thank you for using this script written by Engr Moaz Dev.')
-
-
-
+    #Let's make pdf now.
+    import img2pdf
+    with open("{0}.pdf".format(folder_name), "wb") as file:
+        file.write(img2pdf.convert(page_images))
+        
+        
+    print('The pdf named ' + folder_name + '.pdf has been saved in your working directory.')
+    print('Thank you for using this script written by Engr Moaz Dev.')
