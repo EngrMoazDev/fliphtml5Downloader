@@ -49,7 +49,7 @@ Below code is being added to see which url pattern is being followed.
 """
 def url_crack(book_name, page):
     #Fliphtml5 uses different options of url for different books. Feel free to add more options in the dictionary below.
-    url_options = {0: 'https://online.fliphtml5.com/{0}/files/large/{1}'.format(book_name, fliphtml5_pages[page]['n'][0]), 1: 'https://online.fliphtml5.com/{0}/files/page/{1}.jpg'.format(book_name, page+1)} 
+    url_options = {0: 'https://online.fliphtml5.com/{0}/files/large/{1}'.format(book_name, fliphtml5_pages[page]['n'][0]), 1: 'https://online.fliphtml5.com/{0}/files/page/{1}.jpg'.format(book_name, page+1), 2: 'https://online.fliphtml5.com/{0}{1}'.format(book_name, fliphtml5_pages[page]['n'][0][1:])}
     for key in url_options.keys():
         page_image = requests.get(url_options[key])
         if page_image.status_code == 200:
