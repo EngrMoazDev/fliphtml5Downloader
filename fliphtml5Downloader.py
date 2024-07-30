@@ -40,6 +40,10 @@ fliphtml5_pages = config_dict['fliphtml5_pages']
 
 #Let's prepare where to save our images, creates folder as per title of book
 folder_name = config_dict['meta']['title']
+# Replace invalid characters
+import re
+folder_name = re.sub(r'[<>:"/\\|?*]', '_', folder_name) #suggested by a person named astreopoli
+
 import os
 os.makedirs(folder_name, exist_ok=True)
 
